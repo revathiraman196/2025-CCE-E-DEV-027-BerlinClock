@@ -36,5 +36,26 @@ class SingleMinuteRowServiceImpTest {
                 () -> singleMinuteRowServiceImp.display("24:59:59"));
         assertTrue(ex.getMessage().contains("Invalid Input"));
     }
+    @Test
+    void testSingleMinutesRow_zeroMinutes() {
+        String row = singleMinuteRowServiceImp.display("00:00:00");
+        String expected = "OOOO";
+        assertEquals(expected, row);
+    }
+
+    @Test
+    void testSingleMinutesRow_someMinutes() {
+        // 32 % 5 = 2 lamps on
+        String row = singleMinuteRowServiceImp.display("12:32:00");
+        assertEquals("YYOO", row);
+    }
+
+    @Test
+    void testSingleMinutesRow_maxMinutes() {
+        // 59 % 5 = 4 lamps on
+        String row = singleMinuteRowServiceImp.display("23:59:59");
+        assertEquals("YYYY", row);
+    }
+
 
 }
