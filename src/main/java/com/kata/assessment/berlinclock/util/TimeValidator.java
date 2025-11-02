@@ -44,4 +44,62 @@ public class TimeValidator {
         }
         LOG.debug("Invalid Input, Expected input format is HH:mm:ss :: {}", time);
     }
+
+    /**
+     * Validates that the input time string is in the correct Berlin Time format.
+     * Expected format: 24 chars, each representing a row of the Berlin Clock.
+     * @param time the input Berlin Clock string
+     * @throws IllegalArgumentException if the time format is invalid
+     */
+    public static void validateBerlinTimeFormat(String time) {
+        if (time.trim().length()!= 24) {
+            LOG.error("Invalid Berlin Time format, expected 24 characters.");
+            throw new IllegalArgumentException("Invalid Berlin Time format, expected 24 characters.");
+        }
+
+        LOG.debug("Berlin time format is valid: {}", time);
+    }
+
+    /**
+     * Validates that the Berlin time row is in the correct format.
+     * Expected format: 4 characters, each representing a lamp (either 'R' or 'O').
+     *
+     * @param row The Berlin time row string to validate.
+     * @param expectedLength The expected length of the row (e.g., 4 for Five Hours row).
+     * @throws IllegalArgumentException if the row format is invalid.
+     */
+    public static void validateBerlinTimeRow(String row, int expectedLength) {
+        if (row == null || row.trim().isEmpty()) {
+            LOG.error("Berlin time row cannot be null or empty.");
+            throw new IllegalArgumentException("Berlin time row cannot be null or empty.");
+        }
+
+        // Validate the row length
+        if (row.trim().length() != expectedLength) {
+            LOG.error("Invalid Berlin time row format, expected {} characters.", expectedLength);
+            throw new IllegalArgumentException("Invalid Berlin time format. Expected " + expectedLength + " characters for the five-hour row.");
+        }
+
+        // Validate that the row only contains valid characters ('R' and 'O')
+        validateValidCharacters(row);
+
+        LOG.debug("Berlin time row format is valid: {}", row);
+    }
+
+    /**
+     * Validates that the Berlin time row only contains valid characters ('R' and 'O').
+     *
+     * @param row the row string to validate
+     * @throws IllegalArgumentException if the row contains invalid characters
+     */
+    private static void validateValidCharacters(String row) {
+        for (char ch : row.toCharArray()) {
+            if (ch != 'R' && ch != 'O') {
+                LOG.error("Invalid character detected in Berlin time row: {}", ch);
+                throw new IllegalArgumentException("Invalid character in Berlin time row. Only 'R' and 'O' are allowed.");
+            }
+        }
+        LOG.debug("Valid characters in row: {}", row);
+    }
+
 }
