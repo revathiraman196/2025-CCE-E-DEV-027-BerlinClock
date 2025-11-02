@@ -6,13 +6,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -27,20 +25,22 @@ class BerlinClockControllerTest {
 
     @Mock
     private DisplayRowService fiveMinutesRowService;
-
-    private BerlinClockController berlinClockController;
+    @Mock
+    private DisplayRowService singleHoursRowService;
 
     private ObjectMapper objectMapper;
 
     private static final String SINGLE_MINUTE_BASE_URL = "/api/berlin-clock/v1/single-minute-row";
     private static final String FIVE_MINUTES_BASE_URL = "/api/berlin-clock/v1/five-minutes-row";
+    private static final String SINGLE_HOURS_BASE_URL = "/api/berlin-clock/v1/single-hours-row";
 
     @BeforeEach
     void setup() {
         objectMapper = new ObjectMapper();
 
-        berlinClockController = new BerlinClockController(singleMinuteRowService,
-                                                          fiveMinutesRowService);
+        BerlinClockController berlinClockController = new BerlinClockController(singleMinuteRowService,
+                fiveMinutesRowService,
+                singleHoursRowService);
 
         mockMvc = MockMvcBuilders
                 .standaloneSetup(berlinClockController)
@@ -100,6 +100,28 @@ class BerlinClockControllerTest {
     @Test
     void getFiveMinutesRow_missingRequestParam_returnsBadRequest() throws Exception {
         performMissingParamTest(FIVE_MINUTES_BASE_URL);
+    }
+
+    // ---------------------- SINGLE HOURS ROW TESTS ----------------------
+
+    @Test
+    void getSingleHoursRow_nullOrEmptyTime_returnsBadRequest() throws Exception {
+        performBadRequestTest(SINGLE_HOURS_BASE_URL, singleHoursRowService, "", "Input time cannot be null or empty");
+    }
+
+    @Test
+    void getSingleHoursRow_invalidFormatTime_returnsBadRequest() throws Exception {
+        performBadRequestTest(SINGLE_HOURS_BASE_URL, singleHoursRowService, "25:61:00", "Invalid time format");
+    }
+
+    @Test
+    void getSingleHoursRow_otherIllegalArgument_returnsBadRequest() throws Exception {
+        performBadRequestTest(SINGLE_HOURS_BASE_URL, singleHoursRowService, "random-string", "Unexpected input");
+    }
+
+    @Test
+    void getSingleHoursRow_validTime_returnsOk() throws Exception {
+        performValidTimeTest(SINGLE_HOURS_BASE_URL, singleHoursRowService, "14:35:00", "RRRO");
     }
 
     // ---------------------- HELPER METHODS ----------------------

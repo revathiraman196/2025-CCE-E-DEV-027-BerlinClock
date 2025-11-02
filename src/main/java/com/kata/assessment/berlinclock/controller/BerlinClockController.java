@@ -15,12 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class BerlinClockController {
     private final DisplayRowService singleMinuteRowService;
     private final DisplayRowService fiveMinutesRowService;
+    private final DisplayRowService singleHoursRowService;
     private static final Logger LOG= LoggerFactory.getLogger(BerlinClockController.class);
 
     public BerlinClockController(@Qualifier("singleMinuteRowServiceImp")DisplayRowService singleMinuteRowService,
-                                 @Qualifier("fiveMinutesRowServiceImp")DisplayRowService fiveMinutesRowService) {
+                                 @Qualifier("fiveMinutesRowServiceImp")DisplayRowService fiveMinutesRowService,
+                                 @Qualifier("singleHoursRowServiceImp")DisplayRowService singleHoursRowService) {
         this.singleMinuteRowService = singleMinuteRowService;
         this.fiveMinutesRowService = fiveMinutesRowService;
+        this.singleHoursRowService = singleHoursRowService;
     }
 
     /**
@@ -48,5 +51,12 @@ public class BerlinClockController {
         String result = fiveMinutesRowService.display(time);
         return ResponseEntity.ok(result);
     }
+    @GetMapping("/single-hours-row")
+    public ResponseEntity<String> getSingleHoursRow(@RequestParam(name = "time") String time) {
+        LOG.info("Entered getSingleHoursRow method");
+        String result = singleHoursRowService.display(time);
+        return ResponseEntity.ok(result);
+    }
+
 
 }
