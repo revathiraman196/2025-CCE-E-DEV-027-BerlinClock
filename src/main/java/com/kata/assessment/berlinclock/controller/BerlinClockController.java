@@ -17,16 +17,22 @@ public class BerlinClockController {
     private final DisplayRowService fiveMinutesRowService;
     private final DisplayRowService singleHoursRowService;
     private final DisplayRowService fiveHoursRowService;
-    private static final Logger LOG= LoggerFactory.getLogger(BerlinClockController.class);
+    private final DisplayRowService secondsLampRowService;
 
-    public BerlinClockController(@Qualifier("singleMinuteRowServiceImp")DisplayRowService singleMinuteRowService,
-                                 @Qualifier("fiveMinutesRowServiceImp")DisplayRowService fiveMinutesRowService,
-                                 @Qualifier("singleHoursRowServiceImp")DisplayRowService singleHoursRowService,
-                                 @Qualifier("fiveHoursRowServiceImp") DisplayRowService fiveHoursRowService) {
+    private static final Logger LOG = LoggerFactory.getLogger(BerlinClockController.class);
+
+    public BerlinClockController(
+            @Qualifier("singleMinuteRowServiceImp") DisplayRowService singleMinuteRowService,
+            @Qualifier("fiveMinutesRowServiceImp") DisplayRowService fiveMinutesRowService,
+            @Qualifier("singleHoursRowServiceImp") DisplayRowService singleHoursRowService,
+            @Qualifier("fiveHoursRowServiceImp") DisplayRowService fiveHoursRowService,
+            @Qualifier("secondsLampRowServiceImp") DisplayRowService secondsLampRowService
+    ) {
         this.singleMinuteRowService = singleMinuteRowService;
         this.fiveMinutesRowService = fiveMinutesRowService;
         this.singleHoursRowService = singleHoursRowService;
-        this.fiveHoursRowService=fiveHoursRowService;
+        this.fiveHoursRowService = fiveHoursRowService;
+        this.secondsLampRowService = secondsLampRowService;
     }
 
     /**
@@ -71,6 +77,19 @@ public class BerlinClockController {
         LOG.info("Entered getFiveHoursRow method");
         String result = fiveHoursRowService.display(time);
         return ResponseEntity.ok(result);
+    }
+    /**
+     * Returns the Berlin Clock seconds lamp for the given time.
+     *
+     * @param time the time in HH:mm:ss format
+     * @return the string representing the seconds lamp ("Y" or "O")
+     */
+    @GetMapping("/seconds-lamp-row")
+    public ResponseEntity<String> getSecondsLampRow(@RequestParam(name = "time") String time) {
+        LOG.info("Entered getSecondsLampRow method");
+        String lamp = secondsLampRowService.display(time);
+        LOG.info("Returning seconds lamp row: {}", lamp);
+        return ResponseEntity.ok(lamp);
     }
 
 

@@ -32,6 +32,8 @@ class BerlinClockControllerTest {
     private DisplayRowService singleHoursRowService;
     @Mock
     private DisplayRowService fiveHoursRowService;
+    @Mock
+    private DisplayRowService secondsLampRowService;
 
     private ObjectMapper objectMapper;
 
@@ -39,6 +41,8 @@ class BerlinClockControllerTest {
     private static final String FIVE_MINUTES_BASE_URL = "/api/berlin-clock/v1/five-minutes-row";
     private static final String SINGLE_HOURS_BASE_URL = "/api/berlin-clock/v1/single-hours-row";
     private static final String FIVE_HOURS_BASE_URL = "/api/berlin-clock/v1/five-hours-row";
+    private static final String SECONDS_LAMP_BASE_URL = "/api/berlin-clock/v1/seconds-lamp-row";
+
 
     @BeforeEach
     void setup() {
@@ -48,7 +52,8 @@ class BerlinClockControllerTest {
                 singleMinuteRowService,
                 fiveMinutesRowService,
                 singleHoursRowService,
-                fiveHoursRowService);
+                fiveHoursRowService,
+                secondsLampRowService);
 
         mockMvc = MockMvcBuilders
                 .standaloneSetup(berlinClockController)
@@ -170,6 +175,50 @@ class BerlinClockControllerTest {
                     .andExpect(content().string(expectedRow));
         }
     }
+
+    // ---------------------- SECONDS LAMP ROW TESTS ----------------------
+
+    @Test
+    void getSecondsLampRow_nullOrEmptyTime_returnsBadRequest() throws Exception {
+        performBadRequestTest(SECONDS_LAMP_BASE_URL, secondsLampRowService, "", "Input time cannot be null or empty");
+    }
+
+    @Test
+    void getSecondsLampRow_invalidFormatTime_returnsBadRequest() throws Exception {
+        performBadRequestTest(SECONDS_LAMP_BASE_URL, secondsLampRowService, "25:61:00", "Invalid time format");
+    }
+
+    @Test
+    void getSecondsLampRow_otherIllegalArgument_returnsBadRequest() throws Exception {
+        performBadRequestTest(SECONDS_LAMP_BASE_URL, secondsLampRowService, "random-string", "Unexpected input");
+    }
+
+    @Test
+    void getSecondsLampRow_validTime_returnsOk() throws Exception {
+        Map<String, String> testCases = Map.of(
+                "00:00:00", "Y",   // even second
+                    "23:59:59", "O",   // odd second
+                    "01:01:01", "O",
+                "01:01:02", "Y",
+                "12:34:56", "Y",
+                "12:34:57", "O"
+        );
+
+        testCases.forEach((time, expectedLamp) -> {
+            try {
+                when(secondsLampRowService.display(time)).thenReturn(expectedLamp);
+
+                mockMvc.perform(get(SECONDS_LAMP_BASE_URL)
+                                .param("time", time)
+                                .accept(MediaType.TEXT_PLAIN))
+                        .andExpect(status().isOk())
+                        .andExpect(content().string(expectedLamp));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
 
     // ---------------------- HELPER METHODS ----------------------
 
