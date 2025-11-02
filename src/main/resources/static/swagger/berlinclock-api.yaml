@@ -7,11 +7,11 @@ info:
     name: SquadName
     email: squadEmailAddress
 servers:
-  - url: http://localhost:8081
+  - url: http://localhost:8081/api/berlin-clock/v1
     description: Local server
-  - url: http://berlinclockdev.secure.bnppf:8080
+  - url: http://berlinclockdev.secure.bnppf:8080/api/berlin-clock/v1
     description: dev server
-  - url: http://berlinclockpp.secure.bnppf:8080
+  - url: http://berlinclockpp.secure.bnppf:8080/api/berlin-clock/v1
     description: PP server
 paths:
   /single-minutes-row:
