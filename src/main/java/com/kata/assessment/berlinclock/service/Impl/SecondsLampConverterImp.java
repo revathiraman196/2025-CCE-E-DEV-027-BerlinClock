@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import static com.kata.assessment.berlinclock.constant.BerlinClockConstants.LAMP_ON_YELLOW;
 
-@Component
+@Component("secondsLampConverterImp")
 public class SecondsLampConverterImp implements RowConverterService {
 
     @Override

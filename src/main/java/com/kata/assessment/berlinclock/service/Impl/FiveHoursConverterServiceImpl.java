@@ -4,7 +4,7 @@ import com.kata.assessment.berlinclock.service.RowConverterService;
 import com.kata.assessment.berlinclock.util.TimeValidator;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("fiveHoursConverterServiceImpl")
 public class FiveHoursConverterServiceImpl implements RowConverterService {
     @Override
     public int convert(String row) {

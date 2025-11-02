@@ -36,7 +36,7 @@ class FiveHoursConverterServiceImplTest {
             fiveHoursConverterServiceImpl.convert(berlinTime);
         });
 
-        assertEquals("Invalid Berlin time format. Expected 4 characters for the five-hour row.", thrown.getMessage().trim());
+        assertEquals("Invalid Berlin time format. Expected 4 characters in the row.", thrown.getMessage().trim());
     }
 
 

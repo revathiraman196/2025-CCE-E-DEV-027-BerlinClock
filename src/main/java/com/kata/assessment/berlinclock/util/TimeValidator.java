@@ -77,7 +77,7 @@ public class TimeValidator {
         // Validate the row length
         if (row.trim().length() != expectedLength) {
             LOG.error("Invalid Berlin time row format, expected {} characters.", expectedLength);
-            throw new IllegalArgumentException("Invalid Berlin time format. Expected " + expectedLength + " characters for the five-hour row.");
+            throw new IllegalArgumentException("Invalid Berlin time format. Expected " + expectedLength + " characters in the row.");
         }
 
         // Validate that the row only contains valid characters ('R' and 'O')

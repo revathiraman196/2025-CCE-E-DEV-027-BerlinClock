@@ -2,34 +2,51 @@ package com.kata.assessment.berlinclock.service.Impl;
 
 import com.kata.assessment.berlinclock.service.RowConverterService;
 import com.kata.assessment.berlinclock.util.TimeValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
 public class BerlinTimeConverterServiceImpl {
+
+    private static final Logger LOG = LoggerFactory.getLogger(BerlinTimeConverterServiceImpl.class);
+
     private final RowConverterService fiveHoursConverterServiceImpl;
     private final RowConverterService secondsLampConverterImp;
+    private final RowConverterService singleHourConverterServiceImpl;
 
     public BerlinTimeConverterServiceImpl(
             @Qualifier("fiveHoursConverterServiceImpl") RowConverterService fiveHoursConverterServiceImpl,
-            @Qualifier("secondsLampConverterImp") RowConverterService secondsLampConverterImp) {
+            @Qualifier("secondsLampConverterImp") RowConverterService secondsLampConverterImp,
+            @Qualifier("singleHourConverterServiceImpl") RowConverterService singleHourConverterServiceImpl) {
         this.fiveHoursConverterServiceImpl = fiveHoursConverterServiceImpl;
         this.secondsLampConverterImp = secondsLampConverterImp;
+        this.singleHourConverterServiceImpl = singleHourConverterServiceImpl;
     }
 
     public String convertToDigitalTime(String berlinTime) {
+        LOG.info("Entered in convertToDigitalTime method {}",berlinTime);
         // Basic validation
         TimeValidator.validateNotEmpty(berlinTime);
         TimeValidator.validateBerlinTimeFormat(berlinTime);
 
-        // Extract the seconds part of the Berlin time and convert it
+        // Extract the Seconds part of the Berlin time and convert it
         int seconds = secondsLampConverterImp.convert(berlinTime.substring(0, 1)); // Row 1: Seconds
-        // Extract the Five hours part of the Berlin time and convert it
+        LOG.debug("Seconds converted: {}", seconds);
+
+        // Extract the Five Hours part of the Berlin time and convert it
         int fiveHours = fiveHoursConverterServiceImpl.convert(berlinTime.substring(1, 5)); // Row 2: Five Hours
+        LOG.debug("Five Hours converted: {}", fiveHours);
 
-        // Returning digital time as "HH:MM:SS"
-        return String.format("%02d:%02d:%02d", fiveHours, 0, seconds);
+        // Extract the Single Hour part of the Berlin time and convert it
+        int singleHour = singleHourConverterServiceImpl.convert(berlinTime.substring(5, 9)); // Row 3: Single Hour
+        LOG.debug("Single Hour converted: {}", singleHour);
 
+        // Convert Berlin time to digital format (HH:mm:ss)
+        String digitalTime = String.format("%02d:%02d:%02d", fiveHours + singleHour, 0, seconds);
+        LOG.info("Converted Berlin Time to Digital Time: {}", digitalTime);
 
+        return digitalTime;
     }
 }
