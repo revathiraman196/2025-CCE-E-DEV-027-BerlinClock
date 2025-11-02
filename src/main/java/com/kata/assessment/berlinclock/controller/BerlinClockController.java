@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/berlin-clock/v1")
 public class BerlinClockController {
     private final DisplayRowService singleMinuteRowService;
+    private final DisplayRowService fiveMinutesRowService;
     private static final Logger LOG= LoggerFactory.getLogger(BerlinClockController.class);
 
-    public BerlinClockController(DisplayRowService singleMinuteRowService) {
+    public BerlinClockController(DisplayRowService singleMinuteRowService, DisplayRowService fiveMinutesRowService) {
         this.singleMinuteRowService = singleMinuteRowService;
+        this.fiveMinutesRowService = fiveMinutesRowService;
     }
 
     /**
@@ -31,4 +33,18 @@ public class BerlinClockController {
         String result = singleMinuteRowService.display(time);
         return ResponseEntity.ok(result);
     }
+
+    /**
+     * Returns the Berlin Clock five minutes row for the given time.
+     *
+     * @param time the time in HH:mm:ss format
+     * @return the string representing the five minutes row
+     */
+    @GetMapping("/five-minutes-row")
+    public ResponseEntity<?> getFiveMinutesRow(@RequestParam(name = "time") String time) {
+        LOG.info("Entered getFiveMinutesRow method");
+        String result = fiveMinutesRowService.display(time);
+        return ResponseEntity.ok(result);
+    }
+
 }
