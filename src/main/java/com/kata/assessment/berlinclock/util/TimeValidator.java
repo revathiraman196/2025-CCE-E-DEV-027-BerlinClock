@@ -40,7 +40,7 @@ public class TimeValidator {
             java.time.LocalTime.parse(time); // throws DateTimeParseException if invalid
         }catch (DateTimeException exception){
             LOG.error("Invalid Input, Expected input format is HH:mm:ss with hour 0-23");
-            throw new IllegalArgumentException("Invalid Input, Expected input format is HH:mm:ss", exception);
+            throw new IllegalArgumentException("Invalid Input, Expected input format is HH:mm:ss with hour 0-23" , exception);
         }
         LOG.debug("Invalid Input, Expected input format is HH:mm:ss :: {}", time);
     }

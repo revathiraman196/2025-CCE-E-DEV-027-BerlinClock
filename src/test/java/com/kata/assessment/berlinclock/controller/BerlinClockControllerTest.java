@@ -91,4 +91,18 @@ class BerlinClockControllerTest {
                 .andExpect(jsonPath("$.message").value("Unexpected input"))
                 .andExpect(jsonPath("$.path").value(SINGLE_MINUTE_BASE_URL));
     }
+    @Test
+    void getSingleMinuteRow_validTime_returnsOk() throws Exception {
+        String validTime = "23:23:23";
+        String expectedRow = "YYYO";
+
+        when(singleMinuteRowService.display(validTime)).thenReturn(expectedRow);
+
+        mockMvc.perform(get("/api/berlin-clock/v1/single-minute-row")
+                        .param("time", validTime)
+                        .accept(MediaType.TEXT_PLAIN))
+                .andExpect(status().isOk())
+                .andExpect(content().string(expectedRow));
+    }
+
 }

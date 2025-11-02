@@ -30,18 +30,8 @@ public class BerlinClockController {
      * @return the string representing the single minute row
      */
     @GetMapping("/single-minute-row")
-    public ResponseEntity<?> getSingleMinuteRow(@RequestParam String time, HttpServletRequest request) {
-        try {
+    public ResponseEntity<?> getSingleMinuteRow(@RequestParam (name = "time") String time ) {
             String result = singleMinuteRowService.display(time);
             return ResponseEntity.ok(result);
-        } catch (IllegalArgumentException ex) {
-            ErrorResponse error = new ErrorResponse(
-                    HttpStatus.BAD_REQUEST.value(),
-                    HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                    ex.getMessage(),
-                    request.getRequestURI()
-            );
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-        }
     }
 }
