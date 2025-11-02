@@ -34,6 +34,8 @@ class BerlinClockControllerTest {
     private DisplayRowService fiveHoursRowService;
     @Mock
     private DisplayRowService secondsLampRowService;
+    @Mock
+    private  DisplayRowService fullBerlinClockService;
 
     private ObjectMapper objectMapper;
 
@@ -42,7 +44,7 @@ class BerlinClockControllerTest {
     private static final String SINGLE_HOURS_BASE_URL = "/api/berlin-clock/v1/single-hours-row";
     private static final String FIVE_HOURS_BASE_URL = "/api/berlin-clock/v1/five-hours-row";
     private static final String SECONDS_LAMP_BASE_URL = "/api/berlin-clock/v1/seconds-lamp-row";
-
+    private static final String FULL_CLOCK_BASE_URL = "/api/berlin-clock/v1/full-clock";
 
     @BeforeEach
     void setup() {
@@ -53,7 +55,8 @@ class BerlinClockControllerTest {
                 fiveMinutesRowService,
                 singleHoursRowService,
                 fiveHoursRowService,
-                secondsLampRowService);
+                secondsLampRowService,
+                fullBerlinClockService);
 
         mockMvc = MockMvcBuilders
                 .standaloneSetup(berlinClockController)
@@ -219,6 +222,50 @@ class BerlinClockControllerTest {
         });
     }
 
+    // ---------------------- FULL CLOCK TESTS ----------------------
+    @Test
+    void getFullClock_nullOrEmptyTime_returnsBadRequest() throws Exception {
+        performBadRequestTest(FULL_CLOCK_BASE_URL, fullBerlinClockService, "", "Input time cannot be null or empty");
+    }
+
+    @Test
+    void getFullClock_invalidFormatTime_returnsBadRequest() throws Exception {
+        performBadRequestTest(FULL_CLOCK_BASE_URL, fullBerlinClockService, "25:61:00", "Invalid time format");
+    }
+
+    @Test
+    void getFullClock_otherIllegalArgument_returnsBadRequest() throws Exception {
+        performBadRequestTest(FULL_CLOCK_BASE_URL, fullBerlinClockService, "random-string", "Unexpected input");
+    }
+
+    @Test
+    void getFullClock_validTime_returnsOk() throws Exception {
+        Map<String, String> testCases = Map.of(
+                "00:00:00", "YOOOOOOOOOOOOOOOOOOOOOOO",
+                "23:59:59", "ORRRRRRROYYRYYRYYRYYYYYY",
+                "16:50:06", "YRRROROOOYYRYYRYYRYOOOOO",
+                "11:37:01", "ORROOROOOYYRYYRYOOOOYYOO"
+        );
+
+        testCases.forEach((time, expectedClock) -> {
+            try {
+                when(fullBerlinClockService.display(time)).thenReturn(expectedClock);
+
+                mockMvc.perform(get(FULL_CLOCK_BASE_URL)
+                                .param("time", time)
+                                .accept(MediaType.TEXT_PLAIN))
+                        .andExpect(status().isOk())
+                        .andExpect(content().string(expectedClock));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    @Test
+    void getFullClock_missingRequestParam_returnsBadRequest() throws Exception {
+        performMissingParamTest(FULL_CLOCK_BASE_URL);
+    }
 
     // ---------------------- HELPER METHODS ----------------------
 

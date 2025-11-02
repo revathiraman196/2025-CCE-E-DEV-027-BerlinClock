@@ -18,21 +18,24 @@ public class BerlinClockController {
     private final DisplayRowService singleHoursRowService;
     private final DisplayRowService fiveHoursRowService;
     private final DisplayRowService secondsLampRowService;
+    private final DisplayRowService fullBerlinClockService;
 
-    private static final Logger LOG = LoggerFactory.getLogger(BerlinClockController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(com.kata.assessment.berlinclock.controller.BerlinClockController.class);
 
     public BerlinClockController(
             @Qualifier("singleMinuteRowServiceImp") DisplayRowService singleMinuteRowService,
             @Qualifier("fiveMinutesRowServiceImp") DisplayRowService fiveMinutesRowService,
             @Qualifier("singleHoursRowServiceImp") DisplayRowService singleHoursRowService,
             @Qualifier("fiveHoursRowServiceImp") DisplayRowService fiveHoursRowService,
-            @Qualifier("secondsLampRowServiceImp") DisplayRowService secondsLampRowService
+            @Qualifier("secondsLampRowServiceImp") DisplayRowService secondsLampRowService,
+            @Qualifier("fullBerlinClockServiceImp") DisplayRowService fullBerlinClockService
     ) {
         this.singleMinuteRowService = singleMinuteRowService;
         this.fiveMinutesRowService = fiveMinutesRowService;
         this.singleHoursRowService = singleHoursRowService;
         this.fiveHoursRowService = fiveHoursRowService;
         this.secondsLampRowService = secondsLampRowService;
+        this.fullBerlinClockService=fullBerlinClockService;
     }
 
     /**
@@ -91,6 +94,20 @@ public class BerlinClockController {
         LOG.info("Returning seconds lamp row: {}", lamp);
         return ResponseEntity.ok(lamp);
     }
+    /**
+     * Returns the full Berlin Clock representation for a given time.
+     *
+     * @param time the time in HH:mm:ss format
+     * @return a concatenated string of all Berlin Clock rows
+     */
+    @GetMapping("/full-clock")
+    public ResponseEntity<String> getFullClock(@RequestParam String time) {
+        LOG.info("Entered getFullClock method with time={}", time);
+        String clock = fullBerlinClockService.display(time);
+        LOG.info("Returning full Berlin Clock: {}", clock);
+        return ResponseEntity.ok(clock);
+    }
+
 
 
 }
