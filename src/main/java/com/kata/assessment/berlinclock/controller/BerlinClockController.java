@@ -16,14 +16,17 @@ public class BerlinClockController {
     private final DisplayRowService singleMinuteRowService;
     private final DisplayRowService fiveMinutesRowService;
     private final DisplayRowService singleHoursRowService;
+    private final DisplayRowService fiveHoursRowService;
     private static final Logger LOG= LoggerFactory.getLogger(BerlinClockController.class);
 
     public BerlinClockController(@Qualifier("singleMinuteRowServiceImp")DisplayRowService singleMinuteRowService,
                                  @Qualifier("fiveMinutesRowServiceImp")DisplayRowService fiveMinutesRowService,
-                                 @Qualifier("singleHoursRowServiceImp")DisplayRowService singleHoursRowService) {
+                                 @Qualifier("singleHoursRowServiceImp")DisplayRowService singleHoursRowService,
+                                 @Qualifier("fiveHoursRowServiceImp") DisplayRowService fiveHoursRowService) {
         this.singleMinuteRowService = singleMinuteRowService;
         this.fiveMinutesRowService = fiveMinutesRowService;
         this.singleHoursRowService = singleHoursRowService;
+        this.fiveHoursRowService=fiveHoursRowService;
     }
 
     /**
@@ -55,6 +58,18 @@ public class BerlinClockController {
     public ResponseEntity<String> getSingleHoursRow(@RequestParam(name = "time") String time) {
         LOG.info("Entered getSingleHoursRow method");
         String result = singleHoursRowService.display(time);
+        return ResponseEntity.ok(result);
+    }
+    /**
+     * Returns the Berlin Clock five hours row for the given time.
+     *
+     * @param time the time in HH:mm:ss format
+     * @return the string representing the five hours row
+     */
+    @GetMapping("/five-hours-row")
+    public ResponseEntity<?> getFiveHoursRow(@RequestParam(name = "time") String time) {
+        LOG.info("Entered getFiveHoursRow method");
+        String result = fiveHoursRowService.display(time);
         return ResponseEntity.ok(result);
     }
 

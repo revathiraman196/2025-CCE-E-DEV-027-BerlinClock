@@ -11,6 +11,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.util.Map;
+
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -27,20 +30,25 @@ class BerlinClockControllerTest {
     private DisplayRowService fiveMinutesRowService;
     @Mock
     private DisplayRowService singleHoursRowService;
+    @Mock
+    private DisplayRowService fiveHoursRowService;
 
     private ObjectMapper objectMapper;
 
     private static final String SINGLE_MINUTE_BASE_URL = "/api/berlin-clock/v1/single-minute-row";
     private static final String FIVE_MINUTES_BASE_URL = "/api/berlin-clock/v1/five-minutes-row";
     private static final String SINGLE_HOURS_BASE_URL = "/api/berlin-clock/v1/single-hours-row";
+    private static final String FIVE_HOURS_BASE_URL = "/api/berlin-clock/v1/five-hours-row";
 
     @BeforeEach
     void setup() {
         objectMapper = new ObjectMapper();
 
-        BerlinClockController berlinClockController = new BerlinClockController(singleMinuteRowService,
+        BerlinClockController berlinClockController = new BerlinClockController(
+                singleMinuteRowService,
                 fiveMinutesRowService,
-                singleHoursRowService);
+                singleHoursRowService,
+                fiveHoursRowService);
 
         mockMvc = MockMvcBuilders
                 .standaloneSetup(berlinClockController)
@@ -122,6 +130,45 @@ class BerlinClockControllerTest {
     @Test
     void getSingleHoursRow_validTime_returnsOk() throws Exception {
         performValidTimeTest(SINGLE_HOURS_BASE_URL, singleHoursRowService, "14:35:00", "RRRO");
+    }
+    // ---------------------- FIVE HOURS ROW TESTS ----------------------
+    @Test
+    void getFiveHoursRow_nullOrEmptyTime_returnsBadRequest() throws Exception {
+        performBadRequestTest(FIVE_HOURS_BASE_URL, fiveHoursRowService, "", "Input time cannot be null or empty");
+    }
+
+    @Test
+    void getFiveHoursRow_invalidFormatTime_returnsBadRequest() throws Exception {
+        performBadRequestTest(FIVE_HOURS_BASE_URL, fiveHoursRowService, "25:61:00", "Invalid time format");
+    }
+
+    @Test
+    void getFiveHoursRow_otherIllegalArgument_returnsBadRequest() throws Exception {
+        performBadRequestTest(FIVE_HOURS_BASE_URL, fiveHoursRowService, "random-string", "Unexpected input");
+    }
+
+    @Test
+    void getFiveHoursRow_validTime_returnsOk() throws Exception {
+        // Example test cases
+        var testCases = Map.of(
+                "00:00:00", "OOOO",
+                "23:59:59", "RRRR",
+                "02:04:00", "OOOO",
+                "08:23:00", "ROOO",
+                "16:35:00", "RRRO"
+        );
+
+        for (var entry : testCases.entrySet()) {
+            String time = entry.getKey();
+            String expectedRow = entry.getValue();
+            when(fiveHoursRowService.display(time)).thenReturn(expectedRow);
+
+            mockMvc.perform(get(FIVE_HOURS_BASE_URL)
+                            .param("time", time)
+                            .accept(MediaType.TEXT_PLAIN))
+                    .andExpect(status().isOk())
+                    .andExpect(content().string(expectedRow));
+        }
     }
 
     // ---------------------- HELPER METHODS ----------------------
