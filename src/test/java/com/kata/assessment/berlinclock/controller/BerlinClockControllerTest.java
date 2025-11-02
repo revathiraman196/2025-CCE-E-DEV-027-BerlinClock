@@ -1,5 +1,6 @@
 package com.kata.assessment.berlinclock.controller;
 
+import com.kata.assessment.berlinclock.exception.BerlinClockExceptionHandling;
 import com.kata.assessment.berlinclock.service.DisplayRowService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -35,7 +35,10 @@ class BerlinClockControllerTest {
     @BeforeEach
     void setup() {
         objectMapper = new ObjectMapper();
-        mockMvc = MockMvcBuilders.standaloneSetup(berlinClockController).build();
+        mockMvc = MockMvcBuilders
+                .standaloneSetup(berlinClockController)
+                .setControllerAdvice(new BerlinClockExceptionHandling())
+                .build();
     }
 
     @Test
