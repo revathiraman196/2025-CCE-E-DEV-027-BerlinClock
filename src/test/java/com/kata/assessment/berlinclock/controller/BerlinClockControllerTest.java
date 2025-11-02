@@ -28,7 +28,6 @@ class BerlinClockControllerTest {
     @Mock
     private DisplayRowService fiveMinutesRowService;
 
-    @InjectMocks
     private BerlinClockController berlinClockController;
 
     private ObjectMapper objectMapper;
@@ -39,152 +38,102 @@ class BerlinClockControllerTest {
     @BeforeEach
     void setup() {
         objectMapper = new ObjectMapper();
+
+        berlinClockController = new BerlinClockController(singleMinuteRowService,
+                                                          fiveMinutesRowService);
+
         mockMvc = MockMvcBuilders
                 .standaloneSetup(berlinClockController)
                 .setControllerAdvice(new BerlinClockExceptionHandling())
                 .build();
     }
 
-    // =========================
-    // Single Minute Row Tests
-    // =========================
+    // ---------------------- SINGLE MINUTE ROW TESTS ----------------------
 
     @Test
     void getSingleMinuteRow_nullOrEmptyTime_returnsBadRequest() throws Exception {
-        String emptyTime = "";
-
-        when(singleMinuteRowService.display(emptyTime))
-                .thenThrow(new IllegalArgumentException("Input time cannot be null or empty"));
-
-        mockMvc.perform(get(SINGLE_MINUTE_BASE_URL)
-                        .param("time", emptyTime)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.error").value("Bad Request"))
-                .andExpect(jsonPath("$.message").value("Input time cannot be null or empty"))
-                .andExpect(jsonPath("$.path").value(SINGLE_MINUTE_BASE_URL));
+        performBadRequestTest(SINGLE_MINUTE_BASE_URL, singleMinuteRowService, "", "Input time cannot be null or empty");
     }
 
     @Test
     void getSingleMinuteRow_invalidFormatTime_returnsBadRequest() throws Exception {
-        String invalidTime = "25:61:00";
-
-        when(singleMinuteRowService.display(invalidTime))
-                .thenThrow(new IllegalArgumentException("Invalid time format"));
-
-        mockMvc.perform(get(SINGLE_MINUTE_BASE_URL)
-                        .param("time", invalidTime)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.error").value("Bad Request"))
-                .andExpect(jsonPath("$.message").value("Invalid time format"))
-                .andExpect(jsonPath("$.path").value(SINGLE_MINUTE_BASE_URL));
+        performBadRequestTest(SINGLE_MINUTE_BASE_URL, singleMinuteRowService, "25:61:00", "Invalid time format");
     }
 
     @Test
     void getSingleMinuteRow_otherIllegalArgument_returnsBadRequest() throws Exception {
-        String otherInvalidTime = "random-string";
-
-        when(singleMinuteRowService.display(otherInvalidTime))
-                .thenThrow(new IllegalArgumentException("Unexpected input"));
-
-        mockMvc.perform(get(SINGLE_MINUTE_BASE_URL)
-                        .param("time", otherInvalidTime)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.error").value("Bad Request"))
-                .andExpect(jsonPath("$.message").value("Unexpected input"))
-                .andExpect(jsonPath("$.path").value(SINGLE_MINUTE_BASE_URL));
+        performBadRequestTest(SINGLE_MINUTE_BASE_URL, singleMinuteRowService, "random-string", "Unexpected input");
     }
 
     @Test
     void getSingleMinuteRow_validTime_returnsOk() throws Exception {
-        String validTime = "23:23:23";
-        String expectedRow = "YYYO";
-
-        when(singleMinuteRowService.display(validTime)).thenReturn(expectedRow);
-
-        mockMvc.perform(get(SINGLE_MINUTE_BASE_URL)
-                        .param("time", validTime)
-                        .accept(MediaType.TEXT_PLAIN))
-                .andExpect(status().isOk())
-                .andExpect(content().string(expectedRow));
+        performValidTimeTest(SINGLE_MINUTE_BASE_URL, singleMinuteRowService, "23:23:23", "YYYO");
     }
 
     @Test
     void getSingleMinuteRow_missingRequestParam_returnsBadRequest() throws Exception {
-        mockMvc.perform(get(SINGLE_MINUTE_BASE_URL)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.error").value("Bad Request"))
-                .andExpect(jsonPath("$.message").value("Required parameter 'time' is missing"))
-                .andExpect(jsonPath("$.path").value(SINGLE_MINUTE_BASE_URL));
+        performMissingParamTest(SINGLE_MINUTE_BASE_URL);
     }
 
-    // =========================
-    // Five Minutes Row Tests
-    // =========================
-
-    @Test
-    void getFiveMinutesRow_validTime_returnsOk() throws Exception {
-        String validTime = "12:35:00";
-        String expectedRow = "YYRYYRYOOOO";
-
-        when(fiveMinutesRowService.display(validTime)).thenReturn(expectedRow);
-
-        mockMvc.perform(get(FIVE_MINUTES_BASE_URL)
-                        .param("time", validTime)
-                        .accept(MediaType.TEXT_PLAIN))
-                .andExpect(status().isOk())
-                .andExpect(content().string(expectedRow));
-    }
-
-    @Test
-    void getFiveMinutesRow_invalidTime_returnsBadRequest() throws Exception {
-        String invalidTime = "24:61:00";
-
-        when(fiveMinutesRowService.display(invalidTime))
-                .thenThrow(new IllegalArgumentException("Invalid time format"));
-
-        mockMvc.perform(get(FIVE_MINUTES_BASE_URL)
-                        .param("time", invalidTime)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.error").value("Bad Request"))
-                .andExpect(jsonPath("$.message").value("Invalid time format"))
-                .andExpect(jsonPath("$.path").value(FIVE_MINUTES_BASE_URL));
-    }
+    // ---------------------- FIVE MINUTES ROW TESTS ----------------------
 
     @Test
     void getFiveMinutesRow_nullOrEmptyTime_returnsBadRequest() throws Exception {
-        String emptyTime = "";
+        performBadRequestTest(FIVE_MINUTES_BASE_URL, fiveMinutesRowService, "", "Input time cannot be null or empty");
+    }
 
-        when(fiveMinutesRowService.display(emptyTime))
-                .thenThrow(new IllegalArgumentException("Input time cannot be null or empty"));
+    @Test
+    void getFiveMinutesRow_invalidFormatTime_returnsBadRequest() throws Exception {
+        performBadRequestTest(FIVE_MINUTES_BASE_URL, fiveMinutesRowService, "25:61:00", "Invalid time format");
+    }
 
-        mockMvc.perform(get(FIVE_MINUTES_BASE_URL)
-                        .param("time", emptyTime)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.error").value("Bad Request"))
-                .andExpect(jsonPath("$.message").value("Input time cannot be null or empty"))
-                .andExpect(jsonPath("$.path").value(FIVE_MINUTES_BASE_URL));
+    @Test
+    void getFiveMinutesRow_otherIllegalArgument_returnsBadRequest() throws Exception {
+        performBadRequestTest(FIVE_MINUTES_BASE_URL, fiveMinutesRowService, "random-string", "Unexpected input");
+    }
+
+    @Test
+    void getFiveMinutesRow_validTime_returnsOk() throws Exception {
+        performValidTimeTest(FIVE_MINUTES_BASE_URL, fiveMinutesRowService, "12:35:00", "YYRYYRYOOOO");
     }
 
     @Test
     void getFiveMinutesRow_missingRequestParam_returnsBadRequest() throws Exception {
-        mockMvc.perform(get(FIVE_MINUTES_BASE_URL)
+        performMissingParamTest(FIVE_MINUTES_BASE_URL);
+    }
+
+    // ---------------------- HELPER METHODS ----------------------
+
+    private void performBadRequestTest(String url, DisplayRowService service, String time, String expectedMessage) throws Exception {
+        when(service.display(time)).thenThrow(new IllegalArgumentException(expectedMessage));
+
+        mockMvc.perform(get(url)
+                        .param("time", time)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value(expectedMessage))
+                .andExpect(jsonPath("$.path").value(url));
+    }
+
+    private void performMissingParamTest(String url) throws Exception {
+        mockMvc.perform(get(url)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.error").value("Bad Request"))
                 .andExpect(jsonPath("$.message").value("Required parameter 'time' is missing"))
-                .andExpect(jsonPath("$.path").value(FIVE_MINUTES_BASE_URL));
+                .andExpect(jsonPath("$.path").value(url));
+    }
+
+    private void performValidTimeTest(String url, DisplayRowService service, String time, String expectedRow) throws Exception {
+        when(service.display(time)).thenReturn(expectedRow);
+
+        mockMvc.perform(get(url)
+                        .param("time", time)
+                        .accept(MediaType.TEXT_PLAIN))
+                .andExpect(status().isOk())
+                .andExpect(content().string(expectedRow));
     }
 }

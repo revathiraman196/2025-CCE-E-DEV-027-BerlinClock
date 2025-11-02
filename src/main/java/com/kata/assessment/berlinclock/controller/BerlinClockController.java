@@ -3,6 +3,7 @@ package com.kata.assessment.berlinclock.controller;
 import com.kata.assessment.berlinclock.service.DisplayRowService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +17,8 @@ public class BerlinClockController {
     private final DisplayRowService fiveMinutesRowService;
     private static final Logger LOG= LoggerFactory.getLogger(BerlinClockController.class);
 
-    public BerlinClockController(DisplayRowService singleMinuteRowService, DisplayRowService fiveMinutesRowService) {
+    public BerlinClockController(@Qualifier("singleMinuteRowServiceImp")DisplayRowService singleMinuteRowService,
+                                 @Qualifier("fiveMinutesRowServiceImp")DisplayRowService fiveMinutesRowService) {
         this.singleMinuteRowService = singleMinuteRowService;
         this.fiveMinutesRowService = fiveMinutesRowService;
     }

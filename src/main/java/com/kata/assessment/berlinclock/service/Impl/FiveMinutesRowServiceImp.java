@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 
-@Service
+@Service("fiveMinutesRowServiceImp")
 public class FiveMinutesRowServiceImp implements DisplayRowService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FiveMinutesRowServiceImp.class);
