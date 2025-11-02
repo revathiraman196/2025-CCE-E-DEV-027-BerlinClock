@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
   title: Berlin Clock API
-  version: 1.0.1
-  description: API to convert standard time into Berlin Clock rows. Supports Single and Five Minutes Rows.
+  version: 1.0.5
+  description: API to convert standard time into Berlin Clock rows. Supports Single and Five Minutes, Single and Five Hours Rows, and Seconds Lamp.
   contact:
     name: SquadName
     email: squadEmailAddress
@@ -19,7 +19,7 @@ paths:
       summary: Get Single Minutes Row
       description: Returns the Single Minutes Row (bottom row of Berlin Clock) for a given time.
       security:
-        - BearerAuth: []  # Require Bearer JWT token
+        - BearerAuth: [ ]
       parameters:
         - in: query
           name: time
@@ -36,11 +36,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SingleMinutesRowResponse'
-              examples:
-                success-example:
-                  summary: Example successful response
-                  value:
-                    singleMinutesRow: "YYYY"
         '400':
           description: Invalid request or time format
           content:
@@ -65,7 +60,7 @@ paths:
       summary: Get Five Minutes Row
       description: Returns the Five Minutes Row (second row from the bottom of Berlin Clock) for a given time.
       security:
-        - BearerAuth: []  # Require Bearer token
+        - BearerAuth: [ ]
       parameters:
         - in: query
           name: time
@@ -82,11 +77,128 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FiveMinutesRowResponse'
-              examples:
-                success-example:
-                  summary: Example successful response
-                  value:
-                    fiveMinutesRow: "YYRYYRYYRYY"
+        '400':
+          description: Invalid request or time format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized – missing or invalid JWT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /single-hours-row:
+    get:
+      summary: Get Single Hours Row
+      description: Returns the Single Hours Row (bottom hour row of Berlin Clock) for a given time.
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - in: query
+          name: time
+          schema:
+            type: string
+            format: time
+            example: "14:35:00"
+          required: true
+          description: Digital time in HH:mm:ss format
+      responses:
+        '200':
+          description: Successfully returns the Single Hours Row
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleHoursRowResponse'
+        '400':
+          description: Invalid request or time format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized – missing or invalid JWT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /five-hours-row:
+    get:
+      summary: Get Five Hours Row
+      description: Returns the Five Hours Row (top hour row of Berlin Clock) for a given time.
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - in: query
+          name: time
+          schema:
+            type: string
+            format: time
+            example: "16:35:00"
+          required: true
+          description: Digital time in HH:mm:ss format
+      responses:
+        '200':
+          description: Successfully returns the Five Hours Row
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FiveHoursRowResponse'
+        '400':
+          description: Invalid request or time format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized – missing or invalid JWT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /seconds-lamp:
+    get:
+      summary: Get Seconds Lamp
+      description: Returns the Seconds Lamp for a given time.
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - in: query
+          name: time
+          schema:
+            type: string
+            format: time
+            example: "23:59:59"
+          required: true
+      responses:
+        '200':
+          description: Successfully returns the Seconds Lamp
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecondsLampResponse'
         '400':
           description: Invalid request or time format
           content:
@@ -112,9 +224,6 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: >
-        Include a valid JWT token in the `Authorization` header like:
-        `Authorization: Bearer <your_token_here>`
   schemas:
     SingleMinutesRowResponse:
       type: object
@@ -130,6 +239,27 @@ components:
           type: string
           description: The state of the Five Minutes Row (11 lamps; every 3rd lamp is red)
           example: "YYRYYRYYRYY"
+    SingleHoursRowResponse:
+      type: object
+      properties:
+        singleHoursRow:
+          type: string
+          description: The state of the Single Hours Row (4 lamps)
+          example: "RRRO"
+    FiveHoursRowResponse:
+      type: object
+      properties:
+        fiveHoursRow:
+          type: string
+          description: The state of the Five Hours Row (4 lamps)
+          example: "RRRO"
+    SecondsLampResponse:
+      type: object
+      properties:
+        secondsLamp:
+          type: string
+          description: The state of the Seconds Lamp (1 lamp)
+          example: "Y"
     ErrorResponse:
       type: object
       properties:
