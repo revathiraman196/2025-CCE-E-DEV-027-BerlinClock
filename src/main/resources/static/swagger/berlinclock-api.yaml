@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Berlin Clock API
-  version: 1.0.5
+  version: 1.0.6
   description: API to convert standard time into Berlin Clock rows. Supports Single and Five Minutes, Single and Five Hours Rows, and Seconds Lamp.
   contact:
     name: SquadName
@@ -218,6 +218,47 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /full-clock:
+    get:
+      summary: Get Full Berlin Clock
+      description: Returns the complete Berlin Clock display for a given time, combining all rows (Seconds, Five/Single Hours, Five/Single Minutes).
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - in: query
+          name: time
+          schema:
+            type: string
+            format: time
+            example: "12:34:56"
+          required: true
+          description: Digital time in HH:mm:ss format
+      responses:
+        '200':
+          description: Successfully returns the full Berlin Clock representation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FullClockResponse'
+        '400':
+          description: Invalid request or time format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized – missing or invalid JWT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   securitySchemes:
     BearerAuth:
@@ -260,6 +301,13 @@ components:
           type: string
           description: The state of the Seconds Lamp (1 lamp)
           example: "Y"
+    FullClockResponse:
+      type: object
+      properties:
+        fullClock:
+          type: string
+          description: Concatenated representation of the entire Berlin Clock (e.g., "YRRRORROOYYRYYROOOOOYYOO")
+          example: "YRRRORROOYYRYYROOOOOYYOO"
     ErrorResponse:
       type: object
       properties:
