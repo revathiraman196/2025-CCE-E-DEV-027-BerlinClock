@@ -4,3 +4,7 @@ spring:
       on-profile: local
 server:
   port: 8081
+
+#store this key in vault like harshi cop
+auth:
+  secret-key: kata-assessment-secret-key-which-is-long-enough-for-HS256
