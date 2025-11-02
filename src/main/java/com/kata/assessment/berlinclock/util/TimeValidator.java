@@ -74,14 +74,14 @@ public class TimeValidator {
             throw new IllegalArgumentException("Berlin time row cannot be null or empty.");
         }
 
+        // Validate that the row only contains valid characters ('R' and 'O')
+        validateValidCharacters(row);
+
         // Validate the row length
         if (row.trim().length() != expectedLength) {
             LOG.error("Invalid Berlin time row format, expected {} characters.", expectedLength);
             throw new IllegalArgumentException("Invalid Berlin time format. Expected " + expectedLength + " characters in the row.");
         }
-
-        // Validate that the row only contains valid characters ('R' and 'O')
-        validateValidCharacters(row);
 
         LOG.debug("Berlin time row format is valid: {}", row);
     }
@@ -94,9 +94,9 @@ public class TimeValidator {
      */
     private static void validateValidCharacters(String row) {
         for (char ch : row.toCharArray()) {
-            if (ch != 'R' && ch != 'O') {
+            if (ch != 'R' && ch != 'O' && ch != 'Y') {
                 LOG.error("Invalid character detected in Berlin time row: {}", ch);
-                throw new IllegalArgumentException("Invalid character in Berlin time row. Only 'R' and 'O' are allowed.");
+                throw new IllegalArgumentException("Invalid character in Berlin time row. Only 'R', 'O', and 'Y' are allowed.");
             }
         }
         LOG.debug("Valid characters in row: {}", row);

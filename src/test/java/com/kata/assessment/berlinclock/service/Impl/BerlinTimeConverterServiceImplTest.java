@@ -18,6 +18,8 @@ public class BerlinTimeConverterServiceImplTest {
     private RowConverterService fiveHoursConverterServiceImpl;
     @Mock
     private RowConverterService singleHourConverterServiceImpl;
+    @Mock
+    private RowConverterService fiveMinutesConverterServiceImpl;
 
     private BerlinTimeConverterServiceImpl berlinTimeConverterServiceImpl;
 
@@ -26,7 +28,8 @@ public class BerlinTimeConverterServiceImplTest {
         berlinTimeConverterServiceImpl = new BerlinTimeConverterServiceImpl(
                 fiveHoursConverterServiceImpl,
                 secondsLampConverterImp,
-                singleHourConverterServiceImpl
+                singleHourConverterServiceImpl,
+                fiveMinutesConverterServiceImpl
         );
     }
 

@@ -15,14 +15,17 @@ public class BerlinTimeConverterServiceImpl {
     private final RowConverterService fiveHoursConverterServiceImpl;
     private final RowConverterService secondsLampConverterImp;
     private final RowConverterService singleHourConverterServiceImpl;
+    private final RowConverterService fiveMinutesConverterServiceImpl;
 
     public BerlinTimeConverterServiceImpl(
             @Qualifier("fiveHoursConverterServiceImpl") RowConverterService fiveHoursConverterServiceImpl,
             @Qualifier("secondsLampConverterImp") RowConverterService secondsLampConverterImp,
-            @Qualifier("singleHourConverterServiceImpl") RowConverterService singleHourConverterServiceImpl) {
+            @Qualifier("singleHourConverterServiceImpl") RowConverterService singleHourConverterServiceImpl,
+            @Qualifier("fiveMinutesConverterServiceImpl") RowConverterService fiveMinutesConverterServiceImpl) {
         this.fiveHoursConverterServiceImpl = fiveHoursConverterServiceImpl;
         this.secondsLampConverterImp = secondsLampConverterImp;
         this.singleHourConverterServiceImpl = singleHourConverterServiceImpl;
+        this.fiveMinutesConverterServiceImpl = fiveMinutesConverterServiceImpl; // Initialize the Five Minutes Converter
     }
 
     public String convertToDigitalTime(String berlinTime) {
@@ -42,9 +45,12 @@ public class BerlinTimeConverterServiceImpl {
         // Extract the Single Hour part of the Berlin time and convert it
         int singleHour = singleHourConverterServiceImpl.convert(berlinTime.substring(5, 9)); // Row 3: Single Hour
         LOG.debug("Single Hour converted: {}", singleHour);
+        // Extract the Five Minutes part of the Berlin time and convert it
+        int fiveMinutes = fiveMinutesConverterServiceImpl.convert(berlinTime.substring(9, 20)); // Row 4: Five Minutes
+        LOG.debug("Five Minutes converted: {}", fiveMinutes);
 
         // Convert Berlin time to digital format (HH:mm:ss)
-        String digitalTime = String.format("%02d:%02d:%02d", fiveHours + singleHour, 0, seconds);
+        String digitalTime = String.format("%02d:%02d:%02d", fiveHours + singleHour, fiveMinutes, seconds);
         LOG.info("Converted Berlin Time to Digital Time: {}", digitalTime);
 
         return digitalTime;

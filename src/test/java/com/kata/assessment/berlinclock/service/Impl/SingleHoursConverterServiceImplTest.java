@@ -37,7 +37,7 @@ class SingleHoursConverterServiceImplTest {
             singleHoursConverterServiceImpl.convert(berlinTime);
         });
 
-        assertEquals("Invalid character in Berlin time row. Only 'R' and 'O' are allowed.", thrown.getMessage());
+        assertEquals("Invalid character in Berlin time row. Only 'R', 'O', and 'Y' are allowed.", thrown.getMessage());
     }
 
     @Test

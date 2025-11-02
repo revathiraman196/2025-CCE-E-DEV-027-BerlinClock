@@ -23,7 +23,7 @@ class FiveHoursConverterServiceImplTest {
             fiveHoursConverterServiceImpl.convert(berlinTime);
         });
 
-        assertEquals("Invalid character in Berlin time row. Only 'R' and 'O' are allowed.", thrown.getMessage().trim());
+        assertEquals("Invalid character in Berlin time row. Only 'R', 'O', and 'Y' are allowed.", thrown.getMessage().trim());
     }
 
     @Test
