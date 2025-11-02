@@ -31,7 +31,8 @@ public class BerlinClockController {
      */
     @GetMapping("/single-minute-row")
     public ResponseEntity<?> getSingleMinuteRow(@RequestParam (name = "time") String time ) {
-            String result = singleMinuteRowService.display(time);
-            return ResponseEntity.ok(result);
+        LOG.info("Entered  getSingleMinuteRow method ");
+        String result = singleMinuteRowService.display(time);
+        return ResponseEntity.ok(result);
     }
 }

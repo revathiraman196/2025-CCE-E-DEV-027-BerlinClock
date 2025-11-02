@@ -98,11 +98,23 @@ class BerlinClockControllerTest {
 
         when(singleMinuteRowService.display(validTime)).thenReturn(expectedRow);
 
-        mockMvc.perform(get("/api/berlin-clock/v1/single-minute-row")
+        mockMvc.perform(get(SINGLE_MINUTE_BASE_URL)
                         .param("time", validTime)
                         .accept(MediaType.TEXT_PLAIN))
                 .andExpect(status().isOk())
                 .andExpect(content().string(expectedRow));
     }
+
+    @Test
+    void getSingleMinuteRow_missingRequestParam_returnsBadRequest() throws Exception {
+        mockMvc.perform(get(SINGLE_MINUTE_BASE_URL)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value("Required parameter 'time' is missing"))
+                .andExpect(jsonPath("$.path").value(SINGLE_MINUTE_BASE_URL));
+    }
+
 
 }
