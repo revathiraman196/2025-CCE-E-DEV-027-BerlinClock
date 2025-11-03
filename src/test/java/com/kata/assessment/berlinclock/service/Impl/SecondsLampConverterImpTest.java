@@ -15,11 +15,11 @@ class SecondsLampConverterImpTest {
 
     @Test
     void testConvertEvenSeconds() {
-        assertEquals(0, secondsLampConverter.convert("O"));
+        assertEquals(1, secondsLampConverter.convert("O"));
     }
 
     @Test
     void testConvertOddSeconds() {
-        assertEquals(1, secondsLampConverter.convert("Y"));
+        assertEquals(0, secondsLampConverter.convert("Y"));
     }
 }

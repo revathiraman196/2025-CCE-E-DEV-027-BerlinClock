@@ -14,19 +14,19 @@ public class BerlinTimeConverterServiceImpl {
 
     private final RowConverterService fiveHoursConverterServiceImpl;
     private final RowConverterService secondsLampConverterImp;
-    private final RowConverterService singleHourConverterServiceImpl;
+    private final RowConverterService singleHoursConverterServiceImpl;
     private final RowConverterService fiveMinutesConverterServiceImpl;
     private final RowConverterService singleMinutesConverterServiceImpl;
 
     public BerlinTimeConverterServiceImpl(
             @Qualifier("fiveHoursConverterServiceImpl") RowConverterService fiveHoursConverterServiceImpl,
             @Qualifier("secondsLampConverterImp") RowConverterService secondsLampConverterImp,
-            @Qualifier("singleHourConverterServiceImpl") RowConverterService singleHourConverterServiceImpl,
+            @Qualifier("singleHoursConverterServiceImpl") RowConverterService singleHourConverterServiceImpl,
             @Qualifier("fiveMinutesConverterServiceImpl") RowConverterService fiveMinutesConverterServiceImpl,
             @Qualifier("singleMinutesConverterServiceImpl") RowConverterService singleMinutesConverterServiceImpl) { // Inject the single minutes converter
         this.fiveHoursConverterServiceImpl = fiveHoursConverterServiceImpl;
         this.secondsLampConverterImp = secondsLampConverterImp;
-        this.singleHourConverterServiceImpl = singleHourConverterServiceImpl;
+        this.singleHoursConverterServiceImpl = singleHourConverterServiceImpl;
         this.fiveMinutesConverterServiceImpl = fiveMinutesConverterServiceImpl;
         this.singleMinutesConverterServiceImpl = singleMinutesConverterServiceImpl; // Initialize the Single Minutes Converter
     }
@@ -47,7 +47,7 @@ public class BerlinTimeConverterServiceImpl {
         LOG.debug("Five Hours converted: {}", fiveHours);
 
         // Extract the Single Hour part of the Berlin time and convert it
-        int singleHour = singleHourConverterServiceImpl.convert(berlinTime.substring(5, 9)); // Row 3: Single Hour
+        int singleHour = singleHoursConverterServiceImpl.convert(berlinTime.substring(5, 9)); // Row 3: Single Hour
         LOG.debug("Single Hour converted: {}", singleHour);
 
         // Extract the Five Minutes part of the Berlin time and convert it

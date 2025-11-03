@@ -13,8 +13,8 @@ public class FiveHoursConverterServiceImpl implements RowConverterService {
 
         // Count occurrences of 'R' in the row and multiply by 5
         long count = row.chars()
-                .filter(ch -> ch == 'R')  // Filter only 'R' characters
-                .count();  // Count occurrences of 'R'
+                .filter(ch -> ch == 'R')
+                .count();
 
         return (int) (count * 5);
     }

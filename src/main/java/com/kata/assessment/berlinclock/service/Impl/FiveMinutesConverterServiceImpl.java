@@ -14,7 +14,7 @@ public class FiveMinutesConverterServiceImpl implements RowConverterService {
 
         // Count occurrences of 'Y' in the row and multiply by 5 to get total minutes.
         long count = row.chars()
-                .filter(ch -> ch == 'Y')
+                .filter(ch -> ch == 'Y' || ch == 'R')
                 .count();
 
         return (int) (count * 5);

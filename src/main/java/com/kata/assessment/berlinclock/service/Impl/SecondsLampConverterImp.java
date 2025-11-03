@@ -10,7 +10,7 @@ public class SecondsLampConverterImp implements RowConverterService {
 
     @Override
     public int convert(String row) {
-        // A simple implementation for Seconds Lamp: If row is "Y", it's odd; if "O", it's even
-        return row.equals(LAMP_ON_YELLOW) ? 1 : 0; // Odd = 1, Even = 0
+
+        return row.equals(LAMP_ON_YELLOW) ? 0 : 1; // Odd = 1, Even = 0
     }
 }

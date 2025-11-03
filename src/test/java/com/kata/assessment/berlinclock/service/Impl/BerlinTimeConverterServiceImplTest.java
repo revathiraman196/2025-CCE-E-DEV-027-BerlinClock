@@ -20,7 +20,7 @@ public class BerlinTimeConverterServiceImplTest {
     private RowConverterService fiveHoursConverterServiceImpl;
 
     @Mock
-    private RowConverterService singleHourConverterServiceImpl;
+    private RowConverterService singleHoursConverterServiceImpl;
 
     @Mock
     private RowConverterService fiveMinutesConverterServiceImpl;
@@ -36,7 +36,7 @@ public class BerlinTimeConverterServiceImplTest {
         berlinTimeConverterServiceImpl = new BerlinTimeConverterServiceImpl(
                 fiveHoursConverterServiceImpl,
                 secondsLampConverterImp,
-                singleHourConverterServiceImpl,
+                singleHoursConverterServiceImpl,
                 fiveMinutesConverterServiceImpl,
                 singleMinutesConverterServiceImpl
         );
@@ -81,4 +81,40 @@ public class BerlinTimeConverterServiceImplTest {
         assertThrows(IllegalArgumentException.class, () -> berlinTimeConverterServiceImpl.convertToDigitalTime(berlinTime),
                 "Should throw IllegalArgumentException for invalid character.");
     }
+    @Test
+    void convertToDigitalTime_YOOOOOOOOOOOOOOOOOOOOOOO_ShouldReturn000000() {
+        String berlinTime = "YOOOOOOOOOOOOOOOOOOOOOOO";
+
+        // Mock each row conversion
+        when(secondsLampConverterImp.convert("Y")).thenReturn(0); // Even second = 0
+        when(fiveHoursConverterServiceImpl.convert("OOOO")).thenReturn(0); // 0 hours
+        when(singleHoursConverterServiceImpl.convert("OOOO")).thenReturn(0); // 0 hours
+        when(fiveMinutesConverterServiceImpl.convert("OOOOOOOOOOO")).thenReturn(0); // 0 minutes
+        when(singleMinutesConverterServiceImpl.convert("OOOO")).thenReturn(0); // 0 minutes
+
+        String digitalTime = berlinTimeConverterServiceImpl.convertToDigitalTime(berlinTime);
+
+        assertEquals("00:00:00", digitalTime);
+    }
+    @Test
+    void convertToDigitalTime_ORROOROOOYYRYYRYOOOOYYOO_ShouldReturn113701() {
+        String berlinTime = "ORROOROOOYYRYYRYOOOOYYOO";
+
+        // Mock each row conversion
+        when(secondsLampConverterImp.convert("O")).thenReturn(1);          // seconds = 1
+        when(fiveHoursConverterServiceImpl.convert("RROO")).thenReturn(10); // 2 'R' lamps → 2*5 = 10 hours
+        when(singleHoursConverterServiceImpl.convert("ROOO")).thenReturn(1); // 1 'R' lamp → 1 hour
+        when(fiveMinutesConverterServiceImpl.convert("YYRYYRYOOOO")).thenReturn(35); // 7 yellow/red lamps → 35 min
+        when(singleMinutesConverterServiceImpl.convert("YYOO")).thenReturn(2); // 2 'Y' lamps → 2 min
+
+        String digitalTime = berlinTimeConverterServiceImpl.convertToDigitalTime(berlinTime);
+
+        assertEquals("11:37:01", digitalTime);
+    }
+
+
+
+
+
+
 }

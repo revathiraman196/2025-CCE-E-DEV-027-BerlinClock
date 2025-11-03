@@ -56,6 +56,8 @@ public class TimeValidator {
             LOG.error("Invalid Berlin Time format, expected 24 characters.");
             throw new IllegalArgumentException("Invalid Berlin Time format, expected 24 characters.");
         }
+        // Validate that the row only contains valid characters ('R' and 'O')
+        validateValidCharacters(time);
 
         LOG.debug("Berlin time format is valid: {}", time);
     }
