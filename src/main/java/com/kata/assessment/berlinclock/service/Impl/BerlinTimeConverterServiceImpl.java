@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+// TODO: Refactor to use an interface-based implementation for convertToDigitalTime to improve reusability and separation of concerns.
 @Service
 public class BerlinTimeConverterServiceImpl {
 
@@ -33,10 +34,12 @@ public class BerlinTimeConverterServiceImpl {
 
     public String convertToDigitalTime(String berlinTime) {
         LOG.info("Entered in convertToDigitalTime method {}", berlinTime);
+        // TODO: Move validation logic to an abstract base class for cleaner separation of concerns.
 
         // Basic validation
         TimeValidator.validateNotEmpty(berlinTime);
         TimeValidator.validateBerlinTimeFormat(berlinTime);
+        // TODO: Modify logic to show actual seconds rather than 0 and 1 output.
 
         // Extract the Seconds part of the Berlin time and convert it
         int seconds = secondsLampConverterImp.convert(berlinTime.substring(0, 1)); // Row 1: Seconds
