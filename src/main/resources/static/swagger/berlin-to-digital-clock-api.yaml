@@ -1,0 +1,95 @@
+openapi: 3.0.3
+info:
+  title: Berlin Time Converter API
+  version: 1.0.0
+  description: API to convert Berlin Clock time into standard digital time (HH:mm:ss).
+  contact:
+    name: SquadName
+    email: squadEmailAddress
+
+servers:
+  - url: http://localhost:8081/api/digital-clock/v1
+    description: Local server
+  - url: http://berlinclockdev.secure.bnppf:8080
+    description: Dev server
+  - url: http://berlinclockpp.secure.bnppf:8080
+    description: PP server
+
+paths:
+  /berlin-to-digital:
+    post:
+      summary: Convert Berlin Time to Digital Time
+      description: Takes a Berlin Clock string and returns the corresponding digital time in HH:mm:ss format.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BerlinTimeRequest'
+      responses:
+        '200':
+          description: Successfully converted Berlin Time to Digital Time
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DigitalTimeResponse'
+        '400':
+          description: Invalid Berlin Clock format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized – missing or invalid JWT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    BerlinTimeRequest:
+      type: object
+      properties:
+        berlinTime:
+          type: string
+          description: The Berlin Clock representation of the time.
+          example: "YRRROROOOYYRYYRYYRYOOOOO"
+      required:
+        - berlinTime
+
+    DigitalTimeResponse:
+      type: object
+      properties:
+        digitalTime:
+          type: string
+          description: The digital time in HH:mm:ss format.
+          example: "16:50:06"
+
+    ErrorResponse:
+      type: object
+      properties:
+        httpStatus:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: "Invalid Berlin Clock format."
+        timestamp:
+          type: string
+          format: date-time
+          example: "2025-11-02T10:15:30Z"

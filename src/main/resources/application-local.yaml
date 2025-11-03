@@ -1,0 +1,19 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+server:
+  port: 8081
+
+#store this key in vault like harshi cop
+auth:
+  secret-key: kata-assessment-secret-key-which-is-long-enough-for-HS256
+#Logging setting
+logging:
+  level:
+    root: INFO                # Default logging level for all packages
+  file:
+    name: logs/app.log        # Log file name and location based on environment
+  pattern:
+    console: "%d{HH:mm:ss} %-5level %logger{36} - %msg%n"   # Console log pattern
+    file: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"  # File log pattern
