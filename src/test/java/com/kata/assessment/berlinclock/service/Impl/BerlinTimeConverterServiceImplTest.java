@@ -6,7 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class BerlinTimeConverterServiceImplTest {
@@ -16,12 +18,18 @@ public class BerlinTimeConverterServiceImplTest {
 
     @Mock
     private RowConverterService fiveHoursConverterServiceImpl;
+
     @Mock
     private RowConverterService singleHourConverterServiceImpl;
+
     @Mock
     private RowConverterService fiveMinutesConverterServiceImpl;
 
+    @Mock
+    private RowConverterService singleMinutesConverterServiceImpl;
+
     private BerlinTimeConverterServiceImpl berlinTimeConverterServiceImpl;
+
 
     @BeforeEach
     void setUp() {
@@ -29,7 +37,8 @@ public class BerlinTimeConverterServiceImplTest {
                 fiveHoursConverterServiceImpl,
                 secondsLampConverterImp,
                 singleHourConverterServiceImpl,
-                fiveMinutesConverterServiceImpl
+                fiveMinutesConverterServiceImpl,
+                singleMinutesConverterServiceImpl
         );
     }
 
@@ -72,7 +81,4 @@ public class BerlinTimeConverterServiceImplTest {
         assertThrows(IllegalArgumentException.class, () -> berlinTimeConverterServiceImpl.convertToDigitalTime(berlinTime),
                 "Should throw IllegalArgumentException for invalid character.");
     }
-
-
-
 }
