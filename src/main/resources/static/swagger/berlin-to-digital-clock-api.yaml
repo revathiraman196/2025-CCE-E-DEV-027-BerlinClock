@@ -17,17 +17,19 @@ servers:
 
 paths:
   /berlin-to-digital:
-    post:
+    get:
       summary: Convert Berlin Time to Digital Time
-      description: Takes a Berlin Clock string and returns the corresponding digital time in HH:mm:ss format.
+      description: Takes a Berlin Clock string as a query parameter and returns the corresponding digital time in HH:mm:ss format.
       security:
         - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/BerlinTimeRequest'
+      parameters:
+        - name: berlinTime
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "YRRROROOOYYRYYRYYRYOOOOO"
+          description: The Berlin Clock representation of the time.
       responses:
         '200':
           description: Successfully converted Berlin Time to Digital Time
@@ -62,16 +64,6 @@ components:
       bearerFormat: JWT
 
   schemas:
-    BerlinTimeRequest:
-      type: object
-      properties:
-        berlinTime:
-          type: string
-          description: The Berlin Clock representation of the time.
-          example: "YRRROROOOYYRYYRYYRYOOOOO"
-      required:
-        - berlinTime
-
     DigitalTimeResponse:
       type: object
       properties:
