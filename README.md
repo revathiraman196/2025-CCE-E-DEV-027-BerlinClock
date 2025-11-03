@@ -9,3 +9,8 @@
 ```bash
 mvn clean install
 mvn spring-boot:run
+
+# API Access
+- Refere Swagger File
+- Get JWT from Auth Service by calling the Login API
+- Pass this JWT in the Autherization as Bearer Token when accessing the Berlin clock API Endpoints
