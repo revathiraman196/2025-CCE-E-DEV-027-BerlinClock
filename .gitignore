@@ -31,3 +31,15 @@ build/
 
 ### VS Code ###
 .vscode/
+
+ Ignore all log files
+*.log
+
+# Ignore specific log directories
+/logs/
+/log/
+/logs/**
+
+# If you have Spring Boot or custom log paths
+**/logs/
+**/log/
